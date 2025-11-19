@@ -201,7 +201,7 @@
                         <li>먼지 및 오염 제거</li>
                         <li>최종 점검</li>
                     </ul>
-                    <div class="service-price">견적 문의</div>
+                    <a href="#contact" class="service-inquiry-btn" data-service="입주청소">견적 문의하기</a>
                 </div>
                 
                 <div class="service-card featured">
@@ -218,7 +218,7 @@
                         <li>욕실/주방 완벽 세척</li>
                         <li>창문 및 유리 청소</li>
                     </ul>
-                    <div class="service-price">견적 문의</div>
+                    <a href="#contact" class="service-inquiry-btn" data-service="이사청소">견적 문의하기</a>
                 </div>
                 
                 <div class="service-card">
@@ -234,7 +234,7 @@
                         <li>소독 및 살균</li>
                         <li>최종 점검</li>
                     </ul>
-                    <div class="service-price">견적 문의</div>
+                    <a href="#contact" class="service-inquiry-btn" data-service="쓰레기집청소">견적 문의하기</a>
                 </div>
                 
                 <div class="service-card">
@@ -250,7 +250,7 @@
                         <li>업무 방해 최소화</li>
                         <li>전문 장비 사용</li>
                     </ul>
-                    <div class="service-price">견적 문의</div>
+                    <a href="#contact" class="service-inquiry-btn" data-service="상가사무실청소">견적 문의하기</a>
                 </div>
             </div>
         </div>
@@ -700,6 +700,34 @@
         
         sidebarLinks.forEach(link => {
             link.addEventListener('click', closeSidebar);
+        });
+
+        // 서비스 문의 버튼 클릭 시 해당 서비스 자동 선택
+        const serviceInquiryBtns = document.querySelectorAll('.service-inquiry-btn');
+        serviceInquiryBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const serviceValue = this.getAttribute('data-service');
+                const serviceSelect = document.getElementById('service');
+                
+                // URL 해시가 #contact일 때만 서비스 선택
+                setTimeout(() => {
+                    if (serviceSelect && serviceValue) {
+                        // 서비스 값 매핑
+                        const serviceMap = {
+                            '입주청소': '입주청소',
+                            '이사청소': '이사청소',
+                            '쓰레기집청소': '쓰레기집청소',
+                            '상가사무실청소': '상가사무실청소'
+                        };
+                        
+                        if (serviceMap[serviceValue]) {
+                            serviceSelect.value = serviceMap[serviceValue];
+                            // 폼으로 부드럽게 스크롤
+                            document.getElementById('contact').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }
+                }, 100);
+            });
         });
 
         // 문의 폼 제출

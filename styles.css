@@ -1463,6 +1463,35 @@ body {
     letter-spacing: -0.3px;
 }
 
+.service-inquiry-btn {
+    display: block;
+    width: 100%;
+    padding: 18px 30px;
+    margin-top: 20px;
+    background: linear-gradient(135deg, #cfbeb0 0%, #b8a99c 100%);
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 800;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    letter-spacing: -0.2px;
+}
+
+.service-inquiry-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #b8a99c 0%, #cfbeb0 100%);
+}
+
+.service-inquiry-btn:active {
+    transform: translateY(-1px);
+}
+
 /* 변화 섹션 */
 .transformation-section {
     padding: 0;
@@ -2137,6 +2166,11 @@ body {
 
     .service-price {
         font-size: 1.4rem;
+    }
+
+    .service-inquiry-btn {
+        padding: 15px 25px;
+        font-size: 1.1rem;
     }
 
     .solution-box h3 {
