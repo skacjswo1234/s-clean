@@ -1983,6 +1983,12 @@ body {
     gap: 30px;
 }
 
+.footer-logo-link {
+    display: block;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 .footer-logo-img {
     height: 80px;
     width: auto;
