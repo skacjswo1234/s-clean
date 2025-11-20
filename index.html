@@ -740,8 +740,11 @@
             });
         });
 
+        // Google Apps Script 웹 앱 URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby11BU6G4ZdMzkoWksITRe4Wi0Tf_OIX8Ui77vBn6arth89WFZh_kBgYk2uIkA9t8E/exec';
+
         // 문의 폼 제출
-        document.getElementById('contactForm').addEventListener('submit', function (e) {
+        document.getElementById('contactForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const formData = {
@@ -752,13 +755,44 @@
                 message: document.getElementById('message').value
             };
 
-            // 카카오톡으로 문의 내용 전송
-            const kakaoMessage = `쓸어담다 문의\n\n이름: ${formData.name}\n연락처: ${formData.phone}\n서비스: ${formData.service}\n면적: ${formData.area}\n문의내용: ${formData.message}`;
+            const submitButton = document.querySelector('.form-submit-btn');
+            const originalButtonText = submitButton.textContent;
+            
+            // 버튼 비활성화 및 로딩 표시
+            submitButton.disabled = true;
+            submitButton.textContent = '전송 중...';
 
-            // 카카오톡 링크로 이동
-            window.location.href = `https://open.kakao.com/o/smin1488`;
+            try {
+                // Google Sheets에 데이터 전송 (URL이 설정된 경우에만)
+                if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== '') {
+                    const response = await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
 
-            alert('문의가 접수되었습니다. 카카오톡으로 연결됩니다.');
+                    // no-cors 모드에서는 응답을 읽을 수 없지만, 요청은 성공적으로 전송됩니다
+                }
+
+                // 성공 메시지
+                alert('문의가 성공적으로 접수되었습니다!\n빠른 시일 내에 연락드리겠습니다.');
+                
+                // 폼 리셋
+                document.getElementById('contactForm').reset();
+                
+            } catch (error) {
+                console.error('오류 발생:', error);
+                // 에러가 발생해도 카카오톡으로 연결 (대안)
+                alert('문의가 접수되었습니다. 카카오톡으로 연결됩니다.');
+                window.location.href = `https://open.kakao.com/o/smin1488`;
+            } finally {
+                // 버튼 상태 복원
+                submitButton.disabled = false;
+                submitButton.textContent = originalButtonText;
+            }
         });
     </script>
 </body>
