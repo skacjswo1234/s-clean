@@ -17,6 +17,9 @@ function doPost(e) {
     // 스프레드시트 ID를 여기에 입력하세요
     const SPREADSHEET_ID = '1ORsOv_XZhaYXOsRSDXmW-a4mJJjM3kstcYQPCXj4PbU';
     
+    // 이메일 수신 주소
+    const RECIPIENT_EMAIL = 'seonghwan14566@gmail.com';
+    
     // 스프레드시트 열기
     const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getActiveSheet();
     
@@ -25,6 +28,7 @@ function doPost(e) {
     
     // 현재 날짜/시간
     const timestamp = new Date();
+    const formattedDate = Utilities.formatDate(timestamp, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss');
     
     // 데이터를 시트에 추가
     sheet.appendRow([
@@ -35,6 +39,48 @@ function doPost(e) {
       data.area || '',
       data.message || ''
     ]);
+    
+    // 이메일 제목
+    const emailSubject = '🚨 쓸어담다 새 문의 접수: ' + (data.name || '이름 없음');
+    
+    // 이메일 본문 작성
+    const emailBody = `
+새로운 문의가 접수되었습니다!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 문의 정보
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+👤 이름: ${data.name || '미입력'}
+📞 연락처: ${data.phone || '미입력'}
+🏠 서비스 유형: ${data.service || '미입력'}
+📏 평수/면적: ${data.area || '미입력'}
+💬 문의내용: ${data.message || '미입력'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⏰ 접수일시: ${formattedDate}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+빠른 시일 내에 연락드려주세요!
+
+쓸어담다 문의 시스템
+    `.trim();
+    
+    // 이메일 전송
+    try {
+      GmailApp.sendEmail(
+        RECIPIENT_EMAIL,
+        emailSubject,
+        emailBody,
+        {
+          // HTML 형식으로 더 예쁘게 보낼 수도 있습니다
+          // htmlBody: createHtmlEmail(data, formattedDate)
+        }
+      );
+    } catch (emailError) {
+      // 이메일 전송 실패해도 시트 저장은 성공했으므로 로그만 남김
+      console.error('이메일 전송 실패:', emailError);
+    }
     
     // 성공 응답
     return ContentService
@@ -53,6 +99,62 @@ function doPost(e) {
       }))
       .setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+/**
+ * HTML 형식 이메일 생성 함수 (선택사항)
+ * 더 예쁜 이메일을 원하시면 이 함수를 사용하세요
+ */
+function createHtmlEmail(data, formattedDate) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <style>
+        body { font-family: 'Malgun Gothic', sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #cfbeb0 0%, #8b7355 100%); color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f8f8f8; padding: 20px; border-radius: 0 0 10px 10px; }
+        .info-box { background: white; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #8b7355; }
+        .label { font-weight: bold; color: #8b7355; }
+        .footer { text-align: center; margin-top: 20px; color: #888; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h2>🚨 새로운 문의가 접수되었습니다!</h2>
+        </div>
+        <div class="content">
+          <div class="info-box">
+            <span class="label">👤 이름:</span> ${data.name || '미입력'}
+          </div>
+          <div class="info-box">
+            <span class="label">📞 연락처:</span> ${data.phone || '미입력'}
+          </div>
+          <div class="info-box">
+            <span class="label">🏠 서비스 유형:</span> ${data.service || '미입력'}
+          </div>
+          <div class="info-box">
+            <span class="label">📏 평수/면적:</span> ${data.area || '미입력'}
+          </div>
+          <div class="info-box">
+            <span class="label">💬 문의내용:</span><br>
+            ${data.message || '미입력'}
+          </div>
+          <div class="info-box">
+            <span class="label">⏰ 접수일시:</span> ${formattedDate}
+          </div>
+        </div>
+        <div class="footer">
+          <p>빠른 시일 내에 연락드려주세요!</p>
+          <p>쓸어담다 문의 시스템</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
 }
 
 /**
